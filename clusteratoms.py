@@ -30,9 +30,12 @@ def clusteratoms(PDBfilename, atomnamesel, nclusters):
       if re.search(atomnamesel, line.name):
         atomlines.append([line.serial, line.resSeq, line.x, line.y, line.z])
   atomarr = numpy.array(atomlines)
-  clusteridx = hierarchy.fclusterdata(atomlines[:, 2:4], nclusters,
+  clusteridx = hierarchy.fclusterdata(atomarr[:, 2:4], nclusters,
                                       criterion='maxclust')
-  clusterdata = atomarr[:, 0:2]
+  # slightly kludgy construction of return data structure
+  clusterdata = numpy.zeros([len(clusteridx), 3])
+  clusterdata[:, 0] = atomarr[:, 0]
+  clusterdata[:, 1] = atomarr[:, 1]
   clusterdata[:, 2] = clusteridx
   return clusterdata
 
@@ -49,4 +52,4 @@ if __name__ == '__main__':
                        'Number of clusters to make')
   argv = FLAGS(sys.argv)
   clusters = clusteratoms(FLAGS.infile, FLAGS.atomsel, FLAGS.numclusters)
-  numpy.savetxt(FLAGS.outfile, clusters)
+  numpy.savetxt(FLAGS.outfile, clusters, fmt='%d\t%d\t%d')
