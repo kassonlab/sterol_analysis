@@ -11,7 +11,7 @@ import sys
 import uuid
 
 import clusteratoms
-from HierTools import xvg_parse
+from xvgparse import xvg_parse
 
 
 # Overall idea is take a phosphate index spec and a sterol oxygen index spec
