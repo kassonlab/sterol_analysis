@@ -2414,15 +2414,16 @@ def readPDB(file):
           file:  open file object 
         Returns (dict, errlist)
           dict:  a dictionary indexed by PDB record names 
-          errlist:  a list of record names that couldn't be parsed 
+          # errlist:  a list of record names that couldn't be parsed 
     """
 
     pdblist = []  # Array of parsed lines (as objects)
     errlist = []  # List of records we can't parse
+    models = []
     
     #We can come up with nothing if can't get our file off the web.
     if file is None:
-        return pdblist, errlist
+        return [[]]
 
     while 1: 
         line = string.strip(file.readline())
@@ -2433,9 +2434,14 @@ def readPDB(file):
         try:
             record = string.strip(line[0:6])
             if record not in errlist:
-                cmdstr = "%s(line)" % record
-                obj = eval(cmdstr)
-                pdblist.append(obj)
+                if record == 'ENDMDL':
+                  # new model
+                  models.append(pdblist)
+                  pdblist = []
+                else:
+                  cmdstr = "%s(line)" % record
+                  obj = eval(cmdstr)
+                  pdblist.append(obj)
         except NameError, details:
             errlist.append(record)
         except StandardError, details:
@@ -2454,8 +2460,9 @@ def readPDB(file):
             else:
                 sys.stderr.write("Error parsing line: %s\n" % details)
                 sys.stderr.write("<%s>\n" % string.strip(line))
-
-    return pdblist, errlist    
+    if pdblist:
+      models.append(pdblist)
+    return models
 
 def getRandom():
     """ Download a random PDB and return the path name.
