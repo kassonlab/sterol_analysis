@@ -43,7 +43,7 @@ def clusteratoms(PDBfilename, atomnamesel, nclusters, writendx=None, resname='',
   #                                     criterion='distance')
   if radial_dist:
     ctr_coord = numpy.mean(atomarr[:, 3:6], 0)
-    radial_arr = numpy.array([numpy.linalg.norm(ctr_coord - line[3:6])
+    radial_arr = numpy.array([[numpy.linalg.norm(ctr_coord - line[3:6])]
                               for line in atomarr])
     clusteridx = hierarchy.fclusterdata(radial_arr, nclusters,
                                         criterion='maxclust')
