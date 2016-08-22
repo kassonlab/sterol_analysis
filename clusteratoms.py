@@ -14,7 +14,8 @@ import ndx
 import PDB
 
 
-def clusteratoms(PDBfilename, atomnamesel, nclusters, writendx=None, resname=''):
+def clusteratoms(PDBfilename, atomnamesel, nclusters, writendx=None, resname='',
+                 radial_dist=False):
   """Cluster atoms into k groups by nearest neighbor.
     Args:
       PDBfilename:  input file
@@ -39,9 +40,15 @@ def clusteratoms(PDBfilename, atomnamesel, nclusters, writendx=None, resname='')
   # alternate approach:
   # specify maxdist, then:
   # clusteridx = hierarchy.fclusterdata(atomarr[:, 3:6], maxdist,
-  #                                     criterion='distance') 
-  clusteridx = hierarchy.fclusterdata(atomarr[:, 3:6], nclusters,
-                                      criterion='maxclust')
+  #                                     criterion='distance')
+  if radial_dist:
+    ctr_coord = numpy.mean(atomarr[:, 3:6], 0)
+    radial_arr = [numpy.linalg.norm(ctr_coord - line[3:6]) for line in atomarr]
+    clusteridx = hierarchy.fclusterdata(radial_arr, nclusters,
+                                        criterion='maxclust')
+  else:
+    clusteridx = hierarchy.fclusterdata(atomarr[:, 3:6], nclusters,
+                                        criterion='maxclust')
   # slightly kludgy construction of return data structure
   clusterdata = numpy.zeros([len(clusteridx), 3])
   clusterdata[:, 0] = atomarr[:, 0]
