@@ -690,7 +690,7 @@ class ATOM:
             self.serial = int(string.strip(line[6:11]))
             self.name = string.strip(line[12:16])
             self.altLoc = string.strip(line[16])
-            self.resName = string.strip(line[17:20])
+            self.resName = string.strip(line[17:21])
             self.chainID = string.strip(line[21])
             self.resSeq = int(string.strip(line[22:26]))
             self.iCode = string.strip(line[26])
